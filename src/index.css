@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-preto-premium font-sans text-branco-premium;
+  }
+
+  h1,
+  h2 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .header-brilhante {
+    background: linear-gradient(180deg, #1c1c1c 0%, #0b0b0b 75%);
+    position: relative;
+  }
+
+  .header-brilhante::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  }
+
+  .card {
+    @apply rounded-2xl border border-dourado-escuro/20 bg-preto-card p-6 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply rounded-lg bg-dourado-principal px-4 py-2 text-sm font-semibold text-preto-premium transition hover:bg-dourado-claro disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply rounded-lg border border-dourado-escuro/40 px-4 py-2 text-sm font-medium text-branco-premium transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-danger-text {
+    @apply text-sm font-medium text-red-400 hover:underline;
+  }
+
+  .link-accent {
+    @apply font-medium text-dourado-claro hover:text-dourado-principal hover:underline;
+  }
+
+  .field-label {
+    @apply block text-sm font-medium text-branco-premium;
+  }
+
+  .field-input {
+    @apply mt-1 w-full rounded-lg border border-dourado-escuro/40 bg-preto-premium px-3 py-2 text-sm text-branco-premium placeholder:text-cinza-medio focus:border-dourado-principal focus:outline-none focus:ring-1 focus:ring-dourado-principal;
+    color-scheme: dark;
+  }
+
+  .field-error {
+    @apply mt-1 text-sm text-red-400;
+  }
+}
