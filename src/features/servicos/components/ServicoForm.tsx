@@ -10,6 +10,7 @@ interface ServicoFormProps {
   onSubmit: (values: ServicoFormValues) => Promise<void>
   submitting: boolean
   errorMessage: string | null
+  successMessage?: string | null
   submitLabel?: string
 }
 
@@ -18,6 +19,7 @@ export function ServicoForm({
   onSubmit,
   submitting,
   errorMessage,
+  successMessage,
   submitLabel = 'Salvar',
 }: ServicoFormProps) {
   const {
@@ -139,6 +141,7 @@ export function ServicoForm({
       </div>
 
       {errorMessage && <p className="field-error">{errorMessage}</p>}
+      {successMessage && <p className="mt-1 text-sm text-green-400">{successMessage}</p>}
 
       <button type="submit" disabled={submitting} className="btn-primary w-full sm:w-auto">
         {submitting ? 'Salvando...' : submitLabel}

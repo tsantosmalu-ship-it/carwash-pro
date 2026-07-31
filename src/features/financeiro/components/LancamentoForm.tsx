@@ -18,22 +18,16 @@ export function LancamentoForm({ onSubmit, submitting, errorMessage }: Lancament
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<LancamentoFormValues>({
     resolver: zodResolver(lancamentoSchema),
     defaultValues: { tipo: 'despesa', categoria: '', valor: '', data: hoje(), observacoes: '' },
   })
 
-  async function handleFormSubmit(values: LancamentoFormValues) {
-    await onSubmit(values)
-    reset({ tipo: values.tipo, categoria: '', valor: '', data: hoje(), observacoes: '' })
-  }
-
   return (
     <form
       className="space-y-4 rounded-xl border border-dourado-escuro/20 bg-preto-card p-4"
-      onSubmit={handleSubmit(handleFormSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
       noValidate
     >
       <div className="grid grid-cols-2 gap-4">

@@ -11,12 +11,15 @@ export function FinanceiroPage() {
   const { data: lancamentos, isLoading, isError } = useLancamentos()
   const createMutation = useCreateLancamentoManual()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [mostrarForm, setMostrarForm] = useState(false)
 
   async function handleCreate(values: LancamentoFormValues) {
     setErrorMessage(null)
     try {
       await createMutation.mutateAsync(values)
+      setMostrarForm(false)
+      setSuccessMessage('Lançamento adicionado.')
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     }
@@ -26,10 +29,20 @@ export function FinanceiroPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-xl text-branco-premium">Financeiro</h1>
-        <button type="button" onClick={() => setMostrarForm((atual) => !atual)} className="btn-primary">
+        <button
+          type="button"
+          onClick={() => {
+            setSuccessMessage(null)
+            setErrorMessage(null)
+            setMostrarForm((atual) => !atual)
+          }}
+          className="btn-primary"
+        >
           {mostrarForm ? 'Fechar' : '+ Novo lançamento'}
         </button>
       </div>
+
+      {successMessage && <p className="text-sm text-green-400">{successMessage}</p>}
 
       {isLoading && <p className="text-sm text-cinza-medio">Carregando financeiro...</p>}
       {isError && <p className="field-error">Não foi possível carregar o financeiro.</p>}

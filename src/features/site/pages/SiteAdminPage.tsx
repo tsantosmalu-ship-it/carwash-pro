@@ -61,14 +61,17 @@ function GaleriaEditor() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [legenda, setLegenda] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file) return
     setErrorMessage(null)
+    setSuccessMessage(null)
     try {
       await criarMutation.mutateAsync({ file, legenda })
       setLegenda('')
+      setSuccessMessage('Foto adicionada.')
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     } finally {
@@ -78,8 +81,11 @@ function GaleriaEditor() {
 
   async function handleRemover(id: string) {
     if (!window.confirm('Remover esta foto da galeria?')) return
+    setErrorMessage(null)
+    setSuccessMessage(null)
     try {
       await removerMutation.mutateAsync(id)
+      setSuccessMessage('Foto removida.')
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     }
@@ -134,6 +140,7 @@ function GaleriaEditor() {
         <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
       </div>
       {errorMessage && <p className="field-error">{errorMessage}</p>}
+      {successMessage && <p className="text-sm text-green-400">{successMessage}</p>}
     </div>
   )
 }

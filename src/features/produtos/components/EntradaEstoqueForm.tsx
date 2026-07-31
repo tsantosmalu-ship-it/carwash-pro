@@ -7,6 +7,7 @@ import { getErrorMessage } from '@/shared/lib/errors'
 
 export function EntradaEstoqueForm({ produtoId }: { produtoId: string }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const entradaMutation = useRegistrarEntradaEstoque(produtoId)
   const {
     register,
@@ -20,9 +21,11 @@ export function EntradaEstoqueForm({ produtoId }: { produtoId: string }) {
 
   async function handleFormSubmit(values: EntradaEstoqueFormValues) {
     setErrorMessage(null)
+    setSuccessMessage(null)
     try {
       await entradaMutation.mutateAsync(values)
       reset({ quantidade: '' })
+      setSuccessMessage('Estoque atualizado.')
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     }
@@ -48,6 +51,7 @@ export function EntradaEstoqueForm({ produtoId }: { produtoId: string }) {
         {entradaMutation.isPending ? 'Adicionando...' : '+ Adicionar'}
       </button>
       {errorMessage && <p className="field-error">{errorMessage}</p>}
+      {successMessage && <p className="text-sm text-green-400">{successMessage}</p>}
     </form>
   )
 }

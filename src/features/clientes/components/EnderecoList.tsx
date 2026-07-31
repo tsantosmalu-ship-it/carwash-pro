@@ -25,17 +25,25 @@ export function EnderecoList({ clienteId }: { clienteId: string }) {
   const { data: enderecos, isLoading } = useEnderecos(clienteId)
   const [mode, setMode] = useState<'idle' | 'novo' | string>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const createMutation = useCreateEndereco(clienteId)
   const updateMutation = useUpdateEndereco(clienteId)
   const deleteMutation = useDeleteEndereco(clienteId)
   const favoritoMutation = useSetEnderecoFavorito(clienteId)
 
+  function abrirForm(novoMode: 'novo' | string) {
+    setSuccessMessage(null)
+    setErrorMessage(null)
+    setMode(novoMode)
+  }
+
   async function handleCreate(values: EnderecoFormValues) {
     setErrorMessage(null)
     try {
       await createMutation.mutateAsync(values)
       setMode('idle')
+      setSuccessMessage('Endereço adicionado.')
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     }
@@ -46,6 +54,7 @@ export function EnderecoList({ clienteId }: { clienteId: string }) {
     try {
       await updateMutation.mutateAsync({ id, input: values })
       setMode('idle')
+      setSuccessMessage('Endereço atualizado.')
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     }
@@ -75,6 +84,7 @@ export function EnderecoList({ clienteId }: { clienteId: string }) {
   return (
     <div className="space-y-4">
       {errorMessage && <p className="field-error">{errorMessage}</p>}
+      {successMessage && <p className="text-sm text-green-400">{successMessage}</p>}
 
       {enderecos && enderecos.length > 0 && (
         <ul className="space-y-3">
@@ -106,7 +116,7 @@ export function EnderecoList({ clienteId }: { clienteId: string }) {
                   <p className="mt-1 text-sm text-cinza-medio">{formatEndereco(endereco)}</p>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-2 text-sm">
-                  <button type="button" onClick={() => setMode(endereco.id)} className="link-accent">
+                  <button type="button" onClick={() => abrirForm(endereco.id)} className="link-accent">
                     Editar
                   </button>
                   {!endereco.favorito && (
@@ -140,7 +150,7 @@ export function EnderecoList({ clienteId }: { clienteId: string }) {
           onSubmit={handleCreate}
         />
       ) : (
-        <button type="button" onClick={() => setMode('novo')} className="btn-secondary">
+        <button type="button" onClick={() => abrirForm('novo')} className="btn-secondary">
           + Adicionar endereço
         </button>
       )}

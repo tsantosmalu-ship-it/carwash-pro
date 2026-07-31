@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ServicoForm } from '../components/ServicoForm'
 import { useServico } from '../hooks/useServico'
 import { useCreateServico, useSetServicoStatus, useUpdateServico } from '../hooks/useServicoMutations'
@@ -10,7 +10,15 @@ export function ServicoDetailPage() {
   const { id } = useParams<{ id: string }>()
   const isNovo = id === 'novo'
   const navigate = useNavigate()
+  const location = useLocation()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    if ((location.state as { criado?: boolean } | null)?.criado) {
+      setSuccessMessage('Serviço criado com sucesso.')
+    }
+  }, [location.state])
 
   const { data: servico, isLoading, isError } = useServico(isNovo ? undefined : id)
   const createMutation = useCreateServico()
@@ -21,7 +29,7 @@ export function ServicoDetailPage() {
     setErrorMessage(null)
     try {
       const novoServico = await createMutation.mutateAsync(values)
-      navigate(`/admin/servicos/${novoServico.id}`, { replace: true })
+      navigate(`/admin/servicos/${novoServico.id}`, { replace: true, state: { criado: true } })
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     }
@@ -29,8 +37,10 @@ export function ServicoDetailPage() {
 
   async function handleUpdate(values: ServicoFormValues) {
     setErrorMessage(null)
+    setSuccessMessage(null)
     try {
       await updateMutation.mutateAsync(values)
+      setSuccessMessage('Dados salvos.')
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     }
@@ -93,6 +103,7 @@ export function ServicoDetailPage() {
             defaultValues={servico}
             submitting={updateMutation.isPending}
             errorMessage={errorMessage}
+            successMessage={successMessage}
             onSubmit={handleUpdate}
           />
         </div>

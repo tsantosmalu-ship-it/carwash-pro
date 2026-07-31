@@ -9,6 +9,7 @@ interface ProdutoFormProps {
   onSubmit: (values: ProdutoFormValues) => Promise<void>
   submitting: boolean
   errorMessage: string | null
+  successMessage?: string | null
   submitLabel?: string
 }
 
@@ -17,6 +18,7 @@ export function ProdutoForm({
   onSubmit,
   submitting,
   errorMessage,
+  successMessage,
   submitLabel = 'Salvar',
 }: ProdutoFormProps) {
   const isNovo = !defaultValues
@@ -89,6 +91,7 @@ export function ProdutoForm({
       )}
 
       {errorMessage && <p className="field-error">{errorMessage}</p>}
+      {successMessage && <p className="mt-1 text-sm text-green-400">{successMessage}</p>}
 
       <button type="submit" disabled={submitting} className="btn-primary w-full sm:w-auto">
         {submitting ? 'Salvando...' : submitLabel}

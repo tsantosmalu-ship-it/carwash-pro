@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ProdutoForm } from '../components/ProdutoForm'
 import { FotoProdutoUploader } from '../components/FotoProdutoUploader'
 import { EntradaEstoqueForm } from '../components/EntradaEstoqueForm'
@@ -12,7 +12,15 @@ export function ProdutoDetailPage() {
   const { id } = useParams<{ id: string }>()
   const isNovo = id === 'novo'
   const navigate = useNavigate()
+  const location = useLocation()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    if ((location.state as { criado?: boolean } | null)?.criado) {
+      setSuccessMessage('Produto criado com sucesso.')
+    }
+  }, [location.state])
 
   const { data: produto, isLoading, isError } = useProduto(isNovo ? undefined : id)
   const createMutation = useCreateProduto()
@@ -23,7 +31,7 @@ export function ProdutoDetailPage() {
     setErrorMessage(null)
     try {
       const novoProduto = await createMutation.mutateAsync(values)
-      navigate(`/admin/produtos/${novoProduto.id}`, { replace: true })
+      navigate(`/admin/produtos/${novoProduto.id}`, { replace: true, state: { criado: true } })
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     }
@@ -31,8 +39,10 @@ export function ProdutoDetailPage() {
 
   async function handleUpdate(values: ProdutoFormValues) {
     setErrorMessage(null)
+    setSuccessMessage(null)
     try {
       await updateMutation.mutateAsync(values)
+      setSuccessMessage('Dados salvos.')
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     }
@@ -108,6 +118,7 @@ export function ProdutoDetailPage() {
             defaultValues={produto}
             submitting={updateMutation.isPending}
             errorMessage={errorMessage}
+            successMessage={successMessage}
             onSubmit={handleUpdate}
           />
         </div>
